@@ -1,0 +1,47 @@
+﻿@using Microsoft.AspNetCore.Http
+@model IEnumerable<Okul.Models.Sınıf>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Adi)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Adi)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <!--Kullanıcıdan aldığımız türü bilgisini sessiona yüklemiştik-->
+                <!--türünü buraya çekip eğer adminse gözüksün demiş olduk-->
+                @if (Context.Session.GetString("Turu") == "Admin")
+                {
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                }
+                 
+                <!-- Sınıflardaki öğrencileri görüntelemek için o sınıfa ait öğrenci listelemesi için yeni bir buton oluşturuyoruz-->
+                <!--bu butonun controlleri öğrencicontrolleri olacak-->
+                <!--sınıfa ait öğrencileri gösteermek istediğimiz için actiona sınıfınöğrencileri yazdık-->
+                <!--ama böyle bir action olmadığı için kendimiz oluşturmamız lazım-->
+                <a asp-action="sınıfınogrencileri" asp-controller="Ogrencis" asp-route-id="@item.Id">Öğrenciler</a> 
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

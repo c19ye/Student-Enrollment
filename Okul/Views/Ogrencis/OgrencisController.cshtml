@@ -1,0 +1,54 @@
+﻿@using Microsoft.AspNetCore.Http
+@model IEnumerable<Okul.Models.Ogrenci>
+
+@{
+    ViewData["Title"] = "OgrencisController";
+}
+
+<h1>OgrencisController</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Adi)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Soyadi)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Okulno)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Adi)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Soyadi)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Okulno)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <!--Kullanıcıdan aldığımız türü bilgisini sessiona yüklemiştik-->
+                <!--türünü buraya çekip eğer adminse gözüksün demiş olduk-->
+                @if (Context.Session.GetString("Turu")=="Admin")
+                {
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                }
+               
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,67 @@
+﻿@using Okul.Data
+@model Okul.Models.Ogrenci
+<!--actiona bağlı kalsın istemiyoruz ve viewin direkt olarak veritabanına ulaşmasını istiyoruz bu yüzden context sınıfını enjekte ediyoruz-->
+@inject VeritabaniContext context
+<!--asenkron metodlar için entityframeworkü eklememiz gerekiyordu-->
+@using Microsoft.EntityFrameworkCore
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Ogrenci</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <!--asp for ile yazdığımız scaler sınıf id yi elde edecek-->
+                <select class="form-control" asp-for="sınıfid">
+                    <!--dropdownlistteki value değerini ve adını elle girmek istemiyoruz bu yüzden bir döngü kuruyoruz-->
+                    <!--sınıfları context sınıfından elde ediyoruz ve döngümüzdeki item değişkenine listeliyoruz ve option taglerini döngünün içine alıyoruz-->
+                    <!--çünkü item değişkeninin içinden id sini ve adını çekeceğiz-->
+                    <!--performanstan dolatı hata veriyor bu yüzden ogrencileri dahil ediyoruz-->
+                    @foreach (var item in await context.siniflar.Include(x => x.ogrencileri).ToListAsync())
+                    {
+                        <!--bu şekilde sınıfları yazarak sınıfları dropdown liste aktarıyoruz ve valuesine o sınııfn id sini yazmamız lazım-->
+                        <!--item.id ve item.adi diyerek yerlerine yerleştirmiş oluyoruz-->
+                        <!--herbir sınıfın içinde su kadar ogrenci var demek için countunu sadırıyoruz-->
+                        <option value="@item.Id">@item.Adi (@item.ogrencileri.Count Öğrenci)</option>
+                       
+                    }
+                   
+                    
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Adi" class="control-label"></label>
+                <input asp-for="Adi" class="form-control" />
+                <span asp-validation-for="Adi" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Soyadi" class="control-label"></label>
+                <input asp-for="Soyadi" class="form-control" />
+                <span asp-validation-for="Soyadi" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Okulno" class="control-label"></label>
+                <input asp-for="Okulno" class="form-control" />
+                <span asp-validation-for="Okulno" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

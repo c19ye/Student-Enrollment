@@ -1,0 +1,144 @@
+﻿@using Microsoft.AspNetCore.Http
+@using Microsoft.EntityFrameworkCore
+@using Okul.Data
+@model Sınıf
+@inject VeritabaniContext context
+<!--normalde ogrencileri tutuyordu sınıfa çevirdik-->
+@{
+    ViewData["Title"] = "sınıfınogrencileri";
+}
+<!--model de sınıf oldugu için direkt adına ulaşabiliyoruz ve adi diyerek sınıfın adını yazdırdık-->
+<h1>@Model.Adi Sınıfının Öğrencileri</h1>
+
+<p>
+    <!--bu şekilde yaparak sınıfın id sini yönlendirecek-->
+    <a asp-action="Create" asp-route-id="@Model.Id">Create New</a>
+</p>
+<!--gelenlerin postalanması için form tagi açtık-->
+<form method="post">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>
+            <div class="form-check">
+
+                <input class="form-check-input" type="checkbox" id="tumunusec"> <!--istediğimizi seçmesi için id sini bilmesi gerekiyordu-->
+                <!--burada ogrencileri diyip adına soyadına veya okul numarasına ulaşamadık bu yüzden sınıftaki ogrencilerden rastgele indis aldık -->
+                <!--0 yazmamızın bir önemi yok herhangi bir sayı da yazabiliridk.önemli olan hangi indisi aldığıımz değil indisi almamız önemli -->
+                <label class="form-check-label" for="tumunusec">
+                    @Html.DisplayNameFor(model => model.ogrencileri[0].Adi) <!--adı gözüksün diye itemden alıyoruz adını-->
+                </label>
+            </div>
+            
+            </th>
+            
+            <th>
+                @Html.DisplayNameFor(model => model.ogrencileri[0].Soyadi)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ogrencileri[0].Resim)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ogrencileri[0].Okulno)
+            </th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ogrencileri)
+            {
+                <tr>
+                    <td>
+                        <div class="form-check">
+                            <!--value ve name parametlerine item.id yazdık çünkü ıformcolelction istiyor .buradan geçecek bilgileri-->
+                            <input class="form-check-input cbogrenci" type="checkbox" value="@item.Id" name="seciliogrenciler" id="@item.Id"> <!--istediğimizi seçmesi için id sini bilmesi gerekiyordu-->
+                            <label class="form-check-label" for="@item.Id">
+                                @Html.DisplayFor(modelItem => item.Adi) <!--adı gözüksün diye itemden alıyoruz adını-->
+                            </label>
+                        </div>
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Soyadi)
+                    </td>
+                    <td>
+                        <img src="~/resimler/@item.Resim" class="rounded" style="height: 50px"/> <!--resimlerimiz belirlediğimiz boyutlarda bütün öğrenciler listeleenince soyadından sonra gözükecek-->
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Okulno)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <!--Kullanıcıdan aldığımız türü bilgisini sessiona yüklemiştik-->
+                        <!--türünü buraya çekip eğer adminse gözüksün demiş olduk-->
+                        @if (Context.Session.GetString("Turu") == "Admin")
+                        {
+                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="row">
+        <div class="col-4">
+
+            <select class="form-control" name="hedefsınıfid">
+                <!--dropdownlistteki value değerini ve adını elle girmek istemiyoruz bu yüzden bir döngü kuruyoruz-->
+                <!--sınıfları context sınıfından elde ediyoruz ve döngümüzdeki item değişkenine listeliyoruz ve option taglerini döngünün içine alıyoruz-->
+                <!--çünkü item değişkeninin içinden id sini ve adını çekeceğiz-->
+                <!--performanstan dolatı hata veriyor bu yüzden ogrencileri dahil ediyoruz-->
+                @foreach (var item in await context.siniflar.Include(x => x.ogrencileri).ToListAsync())
+                {
+                    <!--bu şekilde sınıfları yazarak sınıfları dropdown liste aktarıyoruz ve valuesine o sınııfn id sini yazmamız lazım-->
+                    <!--item.id ve item.adi diyerek yerlerine yerleştirmiş oluyoruz-->
+                    <!--herbir sınıfın içinde su kadar ogrenci var demek için countunu sadırıyoruz-->
+                    <option value="@item.Id">@item.Adi (@item.ogrencileri.Count Öğrenci)</option>
+
+                }
+
+
+            </select>
+        </div>
+        <div class="col-5">
+            <!--Sınıfa taşıma butonu-->
+            <!--butonları ayrı ayrı actionlarla iş yaptırmak istiyoruz bu yüzden her butona kendi actionunnu vereceğiz-->
+            <input type="submit" name="btntasi" value="Sınıfa Taşı" asp-action="toplutasi" />
+            <!--Kullanıcıdan aldığımız türü bilgisini sessiona yüklemiştik-->
+            <!--türünü buraya çekip eğer adminse gözüksün demiş olduk-->
+            @if (Context.Session.GetString("Turu") == "Admin")
+            {
+                <input type="submit" name="btnsil" value="Toplu Sil" asp-action="toplusil" />
+            }
+
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('#tumunusec').on('click',function(){
+                if(this.checked){
+                    $('.cbogrenci').each(function(){
+                        this.checked = true;
+                    });
+                }else{
+                    $('.cbogrenci').each(function(){
+                        this.checked = false;
+                    });
+                }
+            });
+    
+            $('.cbogrenci').on('click',function(){
+                if($('.cbogrenci:checked').length == $('.cbogrenci').length){
+                    $('#tumunusecl').prop('checked',true);
+                }else{
+                    $('#tumunusec').prop('checked',false);
+                }
+            });
+        });
+    </script>
+}

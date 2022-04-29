@@ -1,0 +1,50 @@
+﻿@model Okul.Models.Ogrenci
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Ogrenci</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Resim) <!--yüklenilen resmin adı-->
+        </dt>
+        <dd class=" col-sm-10">
+            <img src="~/resimler/@Model.Resim" class="img-thumbnail rounded" /> <!--resimlerimiz root klasöründeki resimler köasöründe ve ogrenciye ait resmi getirecek-->
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Adi)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Adi)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Soyadi)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Soyadi)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Okulno)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Okulno)
+        </dd>
+        <!--detay kısmında açıklamalarda gözükecek-->
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Aciklama)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.Raw(Model.Aciklama) 
+        </dd>
+
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
